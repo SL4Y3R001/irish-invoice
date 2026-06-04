@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Irish Commercial Invoice Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🇮🇪 Commercial Invoice Dashboard</h1>
+            <p>For Goods Shipment to Ireland</p>
+        </header>
+
+        <nav class="tabs">
+            <button class="tab-btn active" onclick="switchTab('form')">Invoice Form</button>
+            <button class="tab-btn" onclick="switchTab('preview')">Preview Invoice</button>
+            <button class="tab-btn" onclick="switchTab('templates')">Templates</button>
+        </nav>
+
+        <!-- Form Tab -->
+        <div id="form" class="tab-content active">
+            <form id="invoiceForm">
+                <!-- Header Section -->
+                <section class="form-section">
+                    <h2>Shipment Details</h2>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Invoice Number *</label>
+                            <input type="text" id="invoiceNum" required placeholder="e.g., INV-2024-001">
+                        </div>
+                        <div class="form-group">
+                            <label>Invoice Date *</label>
+                            <input type="date" id="invoiceDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Currency *</label>
+                            <select id="currency" required onchange="updateCurrency()">
+                                <option value="USD">USD - US Dollar</option>
+                                <option value="EUR">EUR - Euro</option>
+                                <option value="GBP">GBP - British Pound</option>
+                                <option value="CAD">CAD - Canadian Dollar</option>
+                            </select>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Shipper Section -->
+                <section class="form-section">
+                    <h2>Shipper Information</h2>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Company Name *</label>
+                            <input type="text" id="shipperCompany" required placeholder="Your company name">
+                        </div>
+                        <div class="form-group">
+                            <label>Country of Origin *</label>
+                            <input type="text" id="shipperCountry" required placeholder="e.g., United States">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group full">
+                            <label>Address</label>
+                            <input type="text" id="shipperAddress" placeholder="Street address">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>City</label>
+                            <input type="text" id="shipperCity" placeholder="City">
+                        </div>
+                        <div class="form-group">
+                            <label>State/Province</label>
+                            <input type="text" id="shipperState" placeholder="State">
+                        </div>
+                        <div class="form-group">
+                            <label>Postal Code</label>
+                            <input type="text" id="shipperZip" placeholder="Postal code">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Consignee Section -->
+                <section class="form-section">
+                    <h2>Consignee Information (Ireland)</h2>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Company Name *</label>
+                            <input type="text" id="consigneeCompany" required placeholder="Recipient company name">
+                        </div>
+                        <div class="form-group">
+                            <label>VAT Number (Irish)</label>
+                            <input type="text" id="consigneeVAT" placeholder="e.g., IE1234567X">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group full">
+                            <label>Address *</label>
+                            <input type="text" id="consigneeAddress" required placeholder="Street address">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>City *</label>
+                            <input type="text" id="consigneeCity" required placeholder="City">
+                        </div>
+                        <div class="form-group">
+                            <label>County</label>
+                            <input type="text" id="consigneeCounty" placeholder="County">
+                        </div>
+                        <div class="form-group">
+                            <label>Postal Code *</label>
+                            <input type="text" id="consigneeZip" required placeholder="e.g., D01 ABC">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Product Line Items -->
+                <section class="form-section">
+                    <div class="section-header">
+                        <h2>Product Line Items</h2>
+                        <button type="button" class="btn-add" onclick="addLineItem()">+ Add Item</button>
+                    </div>
+                    <div id="lineItems" class="line-items-container">
+                        <div class="line-item">
+                            <div class="line-item-header">
+                                <span>Item 1</span>
+                                <button type="button" class="btn-remove" onclick="removeLineItem(this)">Remove</button>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Description *</label>
+                                    <input type="text" class="description" required placeholder="Product description">
+                                </div>
+                                <div class="form-group">
+                                    <label>HS Code</label>
+                                    <input type="text" class="hsCode" placeholder="e.g., 6204.62.00">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Quantity *</label>
+                                    <input type="number" class="quantity" required value="1" min="1" onchange="calculateTotals()">
+                                </div>
+                                <div class="form-group">
+                                    <label>Unit</label>
+                                    <input type="text" class="unit" placeholder="e.g., PCS, KG, M" value="PCS">
+                                </div>
+                                <div class="form-group">
+                                    <label>Unit Price *</label>
+                                    <input type="number" class="unitPrice" required step="0.01" onchange="calculateTotals()" placeholder="0.00">
+                                </div>
+                                <div class="form-group">
+                                    <label>Total</label>
+                                    <input type="number" class="lineTotal" readonly step="0.01">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Country of Origin</label>
+                                    <input type="text" class="originCountry" placeholder="e.g., United States">
+                                </div>
+                                <div class="form-group">
+                                    <label>Weight (kg)</label>
+                                    <input type="number" class="weight" step="0.01" placeholder="0.00">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Totals Section -->
+                <section class="form-section totals-section">
+                    <h2>Invoice Totals</h2>
+                    <div class="totals-grid">
+                        <div class="total-item">
+                            <label>Subtotal:</label>
+                            <input type="number" id="subtotal" readonly step="0.01">
+                        </div>
+                        <div class="total-item">
+                            <label>Insurance (%):</label>
+                            <div class="input-group">
+                                <input type="number" id="insurancePercent" value="0" min="0" max="100" step="0.01" onchange="calculateTotals()">
+                                <span>%</span>
+                            </div>
+                        </div>
+                        <div class="total-item">
+                            <label>Insurance Amount:</label>
+                            <input type="number" id="insuranceAmount" readonly step="0.01">
+                        </div>
+                        <div class="total-item">
+                            <label>Shipping:</label>
+                            <input type="number" id="shipping" value="0" step="0.01" onchange="calculateTotals()" placeholder="0.00">
+                        </div>
+                        <div class="total-item">
+                            <label>Other Charges:</label>
+                            <input type="number" id="otherCharges" value="0" step="0.01" onchange="calculateTotals()" placeholder="0.00">
+                        </div>
+                        <div class="total-item highlight">
+                            <label>Total Declared Value:</label>
+                            <input type="number" id="totalValue" readonly step="0.01">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Additional Info -->
+                <section class="form-section">
+                    <h2>Additional Information</h2>
+                    <div class="form-row">
+                        <div class="form-group full">
+                            <label>Terms of Trade</label>
+                            <select id="incoterms">
+                                <option value="EXW">EXW - Ex Works</option>
+                                <option value="FCA" selected>FCA - Free Carrier</option>
+                                <option value="CPT">CPT - Carriage Paid To</option>
+                                <option value="CIP">CIP - Carriage and Insurance Paid</option>
+                                <option value="DAP">DAP - Delivered at Place</option>
+                                <option value="DDP">DDP - Delivered Duty Paid</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group full">
+                            <label>Notes/Special Instructions</label>
+                            <textarea id="notes" rows="3" placeholder="e.g., Handle with care, Keep dry, etc."></textarea>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group full">
+                            <label>Declaration Statement</label>
+                            <textarea id="declaration" rows="2" readonly>I hereby declare that the particulars given above are correct and complete. The value shown represents the true invoiced value for the above goods.</textarea>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Action Buttons -->
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="clearForm()">Clear Form</button>
+                    <button type="button" class="btn-primary" onclick="switchTab('preview')">Preview Invoice</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Preview Tab -->
+        <div id="preview" class="tab-content">
+            <div class="preview-actions">
+                <button class="btn-primary" onclick="printInvoice()">🖨️ Print</button>
+                <button class="btn-primary" onclick="downloadPDF()">📥 Download PDF</button>
+                <button class="btn-secondary" onclick="downloadExcel()">📊 Export to Excel</button>
+            </div>
+            <div id="invoicePreview" class="invoice-preview">
+                <!-- Invoice will be rendered here -->
+            </div>
+        </div>
+
+        <!-- Templates Tab -->
+        <div id="templates" class="tab-content">
+            <h2>Quick Templates</h2>
+            <div class="templates-grid">
+                <button class="template-card" onclick="loadTemplate('clothing')">
+                    <h3>👕 Clothing</h3>
+                    <p>Pre-filled template for apparel shipments</p>
+                </button>
+                <button class="template-card" onclick="loadTemplate('electronics')">
+                    <h3>💻 Electronics</h3>
+                    <p>Pre-filled template for tech products</p>
+                </button>
+                <button class="template-card" onclick="loadTemplate('machinery')">
+                    <h3>⚙️ Machinery</h3>
+                    <p>Pre-filled template for industrial equipment</p>
+                </button>
+                <button class="template-card" onclick="loadTemplate('samples')">
+                    <h3>📦 Samples</h3>
+                    <p>Pre-filled template for trade samples</p>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Irish Commercial Invoice Dashboard | Built for Compliance with Irish Customs Requirements</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

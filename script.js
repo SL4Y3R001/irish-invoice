@@ -151,12 +151,69 @@ function clearForm() {
     }
 }
 
+function validateForm() {
+    const invoiceNum = document.getElementById('invoiceNum').value.trim();
+    const invoiceDate = document.getElementById('invoiceDate').value.trim();
+    const currency = document.getElementById('currency').value.trim();
+    
+    const shipperCompany = document.getElementById('shipperCompany').value.trim();
+    const shipperCountry = document.getElementById('shipperCountry').value.trim();
+    
+    const consigneeCompany = document.getElementById('consigneeCompany').value.trim();
+    const consigneeAddress = document.getElementById('consigneeAddress').value.trim();
+    const consigneeCity = document.getElementById('consigneeCity').value.trim();
+    const consigneeZip = document.getElementById('consigneeZip').value.trim();
+    
+    if (!invoiceNum || !invoiceDate || !currency) {
+        alert('Please fill in: Invoice Number, Invoice Date, and Currency');
+        return false;
+    }
+    
+    if (!shipperCompany || !shipperCountry) {
+        alert('Please fill in Shipper Company Name and Country of Origin');
+        return false;
+    }
+    
+    if (!consigneeCompany || !consigneeAddress || !consigneeCity || !consigneeZip) {
+        alert('Please fill in all Consignee fields (Company, Address, City, Postal Code)');
+        return false;
+    }
+    
+    const lineItems = document.querySelectorAll('.line-item');
+    if (lineItems.length === 0) {
+        alert('Please add at least one product line item');
+        return false;
+    }
+    
+    for (let i = 0; i < lineItems.length; i++) {
+        const description = lineItems[i].querySelector('.description').value.trim();
+        const quantity = lineItems[i].querySelector('.quantity').value.trim();
+        const unitPrice = lineItems[i].querySelector('.unitPrice').value.trim();
+        
+        if (!description) {
+            alert(`Item ${i + 1}: Please enter a product description`);
+            return false;
+        }
+        
+        if (!quantity || parseFloat(quantity) <= 0) {
+            alert(`Item ${i + 1}: Please enter a valid quantity`);
+            return false;
+        }
+        
+        if (!unitPrice || parseFloat(unitPrice) <= 0) {
+            alert(`Item ${i + 1}: Please enter a valid unit price`);
+            return false;
+        }
+    }
+    
+    return true;
+}
+
 function generateInvoicePreview() {
-    const form = document.getElementById('invoiceForm');
-    if (!form.checkValidity()) {
-        alert('Please fill in all required fields marked with *');
+    if (!validateForm()) {
         return;
     }
+    
     const invoiceNum = document.getElementById('invoiceNum').value;
     const invoiceDate = document.getElementById('invoiceDate').value;
     const currency = document.getElementById('currency').value;
